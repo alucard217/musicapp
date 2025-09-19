@@ -23,8 +23,8 @@ I wanted an application that gives cool vibes while listening to music. Mostly g
 were listening to music with some viby gradient background, something flies like a snow or particles and I wanted to create something like
 that by myself. This is not the last version of the project cuz I'm willing to add more features to this application. Stay safe yo
 
-![Homepage] (lib/Screenshots/ss1.png)
-![Searching] (lib/Screenshots/ss2.png)
+![Homepage](lib/Screenshots/ss1.png)
+![Searching](lib/Screenshots/ss2.png)
 
 
 
