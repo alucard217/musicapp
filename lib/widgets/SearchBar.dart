@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:musicapp/widgets/MusicList.dart';
+import 'package:musicapp/bloc/search_bar_bloc.dart';
+import 'package:musicapp/bloc/music_list_bloc.dart';
 import 'package:musicapp/widgets/SnowFigure.dart';
 
 class MySearchBar extends StatefulWidget {
   final double diameter;
   final double width;
   final double height;
-  final TextEditingController controller = TextEditingController();
 
-  MySearchBar({
+  const MySearchBar({
     super.key,
     required this.diameter,
     required this.width,
@@ -21,66 +21,47 @@ class MySearchBar extends StatefulWidget {
 }
 
 class _MySearchBarState extends State<MySearchBar> {
-  bool isCircle = true;
-
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          isCircle = false;
-        });
-      },
-      child: Stack(
-        children: [
-          SnowFigure(
-            width: isCircle ? widget.diameter : widget.width,
-            height: isCircle ? widget.diameter : widget.height,
-            borderRadius: isCircle ? 100 : 50,
+    return BlocBuilder<SearchBarBloc, SearchBarState>(
+      builder: (context, state) {
+        final isLocked = state is SearchBarLocked;
+        return GestureDetector(
+          onTap: () {
+            if (isLocked) {
+              context.read<SearchBarBloc>().add(UnlockSearchBar());
+            }
+          },
+          child: SnowFigure(
+            borderRadius: isLocked ? 100 : 50,
+            width: isLocked ? widget.diameter : widget.width,
+            height: isLocked ? widget.diameter : widget.height,
             shadows: BoxShadow(
               color: Colors.white,
-              blurRadius: isCircle ? 10 : 5,
+              blurRadius: isLocked ? 10 : 5,
               spreadRadius: 20,
             ),
-            color: Colors.transparent,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: isCircle
-                  ? Icon(Icons.search, size: 28, color: Colors.grey.shade300)
-                  : TextField(
-                controller: widget.controller,
-                cursorColor: Colors.grey.shade300,
-                style: TextStyle(color: Colors.grey.shade400),
-                decoration: InputDecoration(
-                  icon: GestureDetector(
-                    onTap: () {
-                      final query = widget.controller.text.trim();
-                      if (query.isNotEmpty) {
-                        context
-                            .read<MusicListBloc>()
-                            .add(SearchMusic(query));
-                      }
-                    },
-                    child: Icon(Icons.search,
-                        size: 28, color: Colors.grey.shade300),
-                  ),
-                  border: InputBorder.none,
-                ),
-                onSubmitted: (value) {
-                  if (value.isNotEmpty) {
-                    context.read<MusicListBloc>().add(SearchMusic(value));
-                  }
-                },
-                onTapOutside: (event) {
-                  setState(() {
-                    isCircle = true;
-                  });
-                },
+            color: Colors.white,
+            child: isLocked
+                ? Icon(Icons.search, size: 28, color: Colors.grey.shade300)
+                : TextField(
+              cursorColor: Colors.grey.shade300,
+              style: TextStyle(color: Colors.grey.shade400),
+              decoration: InputDecoration(
+                icon: Icon(Icons.search,
+                    size: 28, color: Colors.grey.shade300),
+                border: InputBorder.none,
               ),
+              onTapOutside: (_) {
+                context.read<SearchBarBloc>().add(LockSearchBar());
+              },
+              onSubmitted: (query) {
+                context.read<MusicListBloc>().add(SearchMusic(query));
+              },
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
