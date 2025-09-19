@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 class JamendoService {
   final String clientID = 'b570cd03';
-  final String baseUrl = 'https://api.jamendo.com/v3.0/tracks/?client_id=b570cd03&format=json';
+  final String baseUrl = 'https://api.jamendo.com/v3.0/tracks/?client_id=&format=json';
 
   Future<List<dynamic>> findPopularTracks({int limit = 7}) async {
     final url = Uri.parse('${baseUrl}pretty&order=popularity_total_desc&limit=$limit');
